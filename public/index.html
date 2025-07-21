@@ -1,64 +1,105 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لعبة كوكو وأصدقاء الحروف</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="intro-screen">
-      <img src="assets/koko.png" alt="شخصية كوكو" class="koko-character" />
-      <h1>مرحبًا بك في لعبة كوكو وأصدقاء الحروف!</h1>
-      <button id="start-button">ابدأ اللعبة</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة كوكو وأصدقاء الحروف</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #f7f3e9; overflow: hidden; }
+    #gameContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    #startScreen, #endScreen, #videoScreen { display: none; flex-direction: column; align-items: center; justify-content: center; }
+    .btn { padding: 10px 20px; margin: 10px; background: #ffb347; border: none; border-radius: 12px; font-size: 1.2em; cursor: pointer; }
+    #videoContainer { position: relative; width: 100%; max-width: 640px; }
+    iframe { width: 100%; height: 360px; border: none; border-radius: 16px; }
+  </style>
+</head>
+<body>
+
+<div id="gameContainer">
+
+  <!-- شاشة البداية -->
+  <div id="startScreen" style="display: flex;">
+    <h1>🌟 كوكو وأصدقاء الحروف 🌟</h1>
+    <button class="btn" onclick="startGame()">ابدأ</button>
+  </div>
+
+  <!-- اللعبة هنا -->
+  <div id="gameContent" style="display: none;">
+    <!-- محتوى اللعبة الحقيقي يكون هنا -->
+    <h2>✨ اللعبة تعمل هنا ✨</h2>
+    <button class="btn" onclick="endGame()">إنهاء المستوى</button>
+  </div>
+
+  <!-- شاشة الفيديو -->
+  <div id="videoScreen" style="display: none;">
+    <div id="videoContainer">
+      <div id="player"></div>
     </div>
+  </div>
 
-    <div id="game-container" class="hidden">
-      <div id="drop-zones">
-        <!-- ترتيب أبجدي للحروف -->
-        <div class="drop-zone" data-letter="أ"></div>
-        <div class="drop-zone" data-letter="ب"></div>
-        <div class="drop-zone" data-letter="ت"></div>
-        <div class="drop-zone" data-letter="ث"></div>
-        <div class="drop-zone" data-letter="ج"></div>
-        <div class="drop-zone" data-letter="ح"></div>
-        <div class="drop-zone" data-letter="خ"></div>
-        <div class="drop-zone" data-letter="د"></div>
-        <div class="drop-zone" data-letter="ذ"></div>
-      </div>
+  <!-- شاشة النهاية -->
+  <div id="endScreen" style="display: none;">
+    <h2>🎉 أحسنت!</h2>
+    <button class="btn" onclick="startGame()">🔁 إعادة اللعب</button>
+    <button class="btn" onclick="goHome()">🏠 العودة للرئيسية</button>
+  </div>
 
-      <div id="draggables">
-        <!-- عناصر السحب بجوار مناطقها -->
-        <img src="assets/أسد.png" data-letter="أ" class="draggable" />
-        <img src="assets/بطة.png" data-letter="ب" class="draggable" />
-        <img src="assets/تفاحة.png" data-letter="ت" class="draggable" />
-        <img src="assets/ثعلب.png" data-letter="ث" class="draggable" />
-        <img src="assets/جمل.png" data-letter="ج" class="draggable" />
-        <img src="assets/حصان.png" data-letter="ح" class="draggable" />
-        <img src="assets/خروف.png" data-letter="خ" class="draggable" />
-        <img src="assets/دجاجة.png" data-letter="د" class="draggable" />
-        <img src="assets/ذرة.png" data-letter="ذ" class="draggable" />
-      </div>
-    </div>
+</div>
 
-    <div id="video-screen" class="hidden">
-      <iframe
-        id="reward-video"
-        width="100%"
-        height="315"
-        src="https://www.youtube.com/embed/MBsYXRytFo8?enablejsapi=1&rel=0&modestbranding=1"
-        title="فيديو نهاية المستوى"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-      ></iframe>
-      <div class="video-controls">
-        <button id="close-video">إغلاق</button>
-        <button id="replay-button">إعادة اللعب</button>
-        <button id="home-button">العودة للرئيسية</button>
-      </div>
-    </div>
+<!-- YouTube IFrame API -->
+<script>
+  let player;
 
-    <script src="script.js"></script>
-  </body>
+  function startGame() {
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("videoScreen").style.display = "none";
+    document.getElementById("gameContent").style.display = "flex";
+  }
+
+  function endGame() {
+    document.getElementById("gameContent").style.display = "none";
+    document.getElementById("videoScreen").style.display = "flex";
+
+    // تحميل الفيديو
+    if (!player) {
+      player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        videoId: 'MBsYXRytFo8',
+        playerVars: {
+          'autoplay': 1,
+          'controls': 1,
+          'rel': 0,  // اقتراحات فقط من نفس القناة
+        },
+        events: {
+          'onReady': (event) => event.target.playVideo(),
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    } else {
+      player.seekTo(0);
+      player.playVideo();
+    }
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.ENDED) {
+      document.getElementById("videoScreen").style.display = "none";
+      document.getElementById("endScreen").style.display = "flex";
+    }
+  }
+
+  function goHome() {
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("startScreen").style.display = "flex";
+  }
+
+  // تحميل YouTube IFrame API
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.body.appendChild(tag);
+</script>
+
+</body>
 </html>
