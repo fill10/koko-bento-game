@@ -2,39 +2,110 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>كوكو وأصدقاء الحروف</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="assets/koko.png" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #fffbf1, #fff);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      direction: rtl;
+    }
+
+    .start-screen, .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .start-screen.active, .success-screen.active {
+      display: flex;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #ff6f61;
+    }
+
+    button {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      background-color: #ffaf40;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-top: 20px;
+    }
+
+    .characters {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .characters img {
+      width: 120px;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .certificate {
+      background-color: #fff5dc;
+      border: 3px dashed #ffc107;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 600px;
+    }
+
+    .certificate h2 {
+      font-size: 1.8em;
+      color: #4caf50;
+    }
+  </style>
 </head>
 <body>
 
-  <div id="start-screen" class="screen active">
-    <img src="assets/koko.png" alt="كوكو" class="character" />
-    <h1>مرحبًا بك في لعبة كوكو وأصدقاء الحروف!</h1>
-    <button id="start-btn">ابدأ اللعبة</button>
+  <div class="start-screen active" id="startScreen">
+    <h1>🎉 كوكو وأصدقاء الحروف 🎉</h1>
+    <img src="assets/koko.png" alt="كوكو" style="width: 180px; margin-top: 20px;">
+    <button onclick="startGame()">ابدأ اللعبة</button>
   </div>
 
-  <div id="game-screen" class="screen">
-    <div id="dropzones-container"></div>
-    <div id="draggables-container"></div>
-  </div>
-
-  <div id="video-screen" class="screen">
-    <div class="video-wrapper">
-      <iframe id="reward-video" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div class="success-screen" id="successScreen">
+    <div class="certificate">
+      <h2>🌟 أحسنت أيها البطل!</h2>
+      <p>لقد أتممت المستوى بنجاح 👏</p>
+      <div class="characters">
+        <img src="assets/koko.png" alt="كوكو">
+        <img src="assets/ahmad.png" alt="أحمد">
+        <img src="assets/sarah.png" alt="سارة">
+      </div>
     </div>
+    <button onclick="restartGame()">العودة للبداية</button>
   </div>
 
-  <div id="success-screen" class="screen">
-    <h2>أحسنت يا بطل 🎉</h2>
-    <img src="assets/ahmad.png" class="character-small" />
-    <img src="assets/sarah.png" class="character-small" />
-    <p>لقد أنهيت المستوى بنجاح!</p>
-    <button onclick="location.reload()">إعادة اللعب</button>
-    <button onclick="goToHome()">العودة للرئيسية</button>
-  </div>
+  <script>
+    function startGame() {
+      document.getElementById('startScreen').classList.remove('active');
 
-  <script src="script.js"></script>
+      // بعد انتهاء اللعبة (مثلاً 5 ثوانٍ هنا كمثال)
+      setTimeout(() => {
+        document.getElementById('successScreen').classList.add('active');
+      }, 5000);
+    }
+
+    function restartGame() {
+      document.getElementById('successScreen').classList.remove('active');
+      document.getElementById('startScreen').classList.add('active');
+    }
+  </script>
 </body>
 </html>
