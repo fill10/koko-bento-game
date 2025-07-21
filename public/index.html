@@ -1,181 +1,27 @@
+
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>كوكو وأصدقاء الحروف</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-    }
-    .start-screen, .video-screen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255,255,255,0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-    .hidden {
-      display: none;
-    }
-    .game-container {
-      display: flex;
-      justify-content: space-between;
-      padding: 2rem;
-      flex-wrap: wrap;
-    }
-    .drop-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      flex: 1;
-      padding: 1rem;
-    }
-    .dropzone {
-      width: 100px;
-      height: 100px;
-      border: 2px dashed #aaa;
-      background-color: #fefefe;
-      text-align: center;
-      line-height: 100px;
-      font-size: 24px;
-    }
-    .draggable {
-      width: 100px;
-      height: 100px;
-      margin: 0.5rem;
-      cursor: grab;
-    }
-    .draggables-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 1rem;
-      gap: 1rem;
-    }
-    button {
-      padding: 0.7rem 1.5rem;
-      font-size: 1.2rem;
-      background-color: #ff9900;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    iframe {
-      width: 90%;
-      height: 60vh;
-      border: none;
-      border-radius: 10px;
-    }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>html {
+height: 100%;
+}
+
+body {
+margin: 0;
+padding: 0;
+height: 100%;
+}
+
+iframe {
+display: block;
+width: 100%;
+height: 100%;
+border: 0;
+}
+</style>
 </head>
 <body>
-  <div class="start-screen" id="startScreen">
-    <h1>مرحباً بك في لعبة كوكو وأصدقاء الحروف!</h1>
-    <button onclick="startGame()">ابدأ اللعبة</button>
-  </div>
-
-  <div class="video-screen hidden" id="videoScreen">
-    <iframe id="endVideo" src="" allowfullscreen allow="autoplay"></iframe>
-    <div>
-      <button onclick="replayGame()">إعادة اللعب</button>
-      <button onclick="goToHome()">العودة للرئيسية</button>
-    </div>
-  </div>
-
-  <div class="game-container" id="gameContainer" style="display:none">
-    <div class="drop-column" id="dropZones"></div>
-    <div class="draggables-container" id="draggables"></div>
-  </div>
-
-  <script>
-    const letters = ['أ','ب','ت','ث','ج','ح','خ','د','ذ'];
-    const items = [
-      { letter: 'أ', img: 'https://example.com/تمساح.png' },
-      { letter: 'ب', img: 'https://example.com/بطة.png' },
-      { letter: 'ت', img: 'https://example.com/تفاحة.png' },
-      { letter: 'ث', img: 'https://example.com/ثعلب.png' },
-      { letter: 'ج', img: 'https://example.com/جمل.png' },
-      { letter: 'ح', img: 'https://example.com/حصان.png' },
-      { letter: 'خ', img: 'https://example.com/خروف.png' },
-      { letter: 'د', img: 'https://example.com/دجاجة.png' },
-      { letter: 'ذ', img: 'https://example.com/ذرة.png' },
-    ];
-
-    let matched = 0;
-
-    function startGame() {
-      document.getElementById('startScreen').classList.add('hidden');
-      document.getElementById('gameContainer').style.display = 'flex';
-      createGame();
-    }
-
-    function createGame() {
-      const dropZones = document.getElementById('dropZones');
-      const draggables = document.getElementById('draggables');
-
-      letters.forEach(letter => {
-        const dz = document.createElement('div');
-        dz.className = 'dropzone';
-        dz.dataset.letter = letter;
-        dropZones.appendChild(dz);
-      });
-
-      items.forEach(item => {
-        const img = document.createElement('img');
-        img.src = item.img;
-        img.className = 'draggable';
-        img.draggable = true;
-        img.dataset.letter = item.letter;
-
-        img.addEventListener('dragstart', e => {
-          e.dataTransfer.setData('text/plain', item.letter);
-        });
-
-        draggables.appendChild(img);
-      });
-
-      document.querySelectorAll('.dropzone').forEach(zone => {
-        zone.addEventListener('dragover', e => e.preventDefault());
-        zone.addEventListener('drop', e => {
-          e.preventDefault();
-          const draggedLetter = e.dataTransfer.getData('text/plain');
-          if (draggedLetter === zone.dataset.letter) {
-            matched++;
-            zone.style.backgroundColor = '#c3f7c3';
-            const dragged = document.querySelector(`[data-letter='${draggedLetter}']`);
-            dragged.style.display = 'none';
-            if (matched === letters.length) showVideo();
-          } else {
-            zone.style.backgroundColor = '#f8d7da';
-          }
-        });
-      });
-    }
-
-    function showVideo() {
-      document.getElementById('gameContainer').style.display = 'none';
-      const videoFrame = document.getElementById('endVideo');
-      const videoScreen = document.getElementById('videoScreen');
-      videoScreen.classList.remove('hidden');
-      videoFrame.src = "https://www.youtube.com/embed/MBsYXRytFo8?autoplay=1&rel=0&modestbranding=1&enablejsapi=1";
-    }
-
-    function replayGame() {
-      location.reload();
-    }
-
-    function goToHome() {
-      location.reload();
-    }
-  </script>
+<iframe src="/.localservice@no-server.96435430.html"></iframe>
 </body>
-</html>
+</htm
