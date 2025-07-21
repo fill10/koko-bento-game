@@ -1,209 +1,198 @@
-// main.js
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>كوكو وأصدقاء الحروف</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff4ea;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    #game-screen, #video-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #intro-screen, #video-screen {
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #ffcf4f;
+    }
+    .dropzone-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 20px;
+      margin: 30px 0;
+    }
+    .dropzone, .draggable {
+      width: 100px;
+      height: 100px;
+      background-color: #eee;
+      border: 2px dashed #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border-radius: 12px;
+    }
+    .draggable {
+      background-color: #d3f9d8;
+      cursor: grab;
+    }
+    .hidden {
+      display: none;
+    }
+    iframe {
+      border: none;
+      width: 90vw;
+      height: 50vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="intro-screen">
+    <h1>مرحبًا بك في كوكو وأصدقاء الحروف</h1>
+    <button onclick="startGame()">ابدأ</button>
+  </div>
 
-// بيانات الحروف ومستويات اللعبة
-const levels = [
-  {
-    name: "المستوى الأول",
-    letters: [
-      { char: "أ", word: "أسد", img: "./assets/letters/alif.png" },
-      { char: "ب", word: "بطة", img: "./assets/letters/baa.png" },
-      { char: "ت", word: "تفاحة", img: "./assets/letters/taa.png" },
-      { char: "ث", word: "ثعلب", img: "./assets/letters/thaa.png" },
-      { char: "ج", word: "جمل", img: "./assets/letters/jeem.png" },
-      { char: "ح", word: "حصان", img: "./assets/letters/haa.png" },
-      { char: "خ", word: "خروف", img: "./assets/letters/khaa.png" },
-      { char: "د", word: "دجاجة", img: "./assets/letters/dal.png" },
-    ],
-  },
-];
+  <div id="game-screen">
+    <div class="dropzone-container" id="dropzones"></div>
+    <div class="dropzone-container" id="draggables"></div>
+  </div>
 
-let currentLevelIndex = 0;
-let score = 0;
-let lives = 3;
+  <div id="video-screen">
+    <div id="video-container"></div>
+    <button id="btn-close" onclick="closeVideo()" class="hidden">❌ إغلاق</button>
+    <button onclick="restartGame()" class="hidden" id="btn-restart">🔁 إعادة</button>
+    <button onclick="goToIntro()" class="hidden" id="btn-home">🏠 الرئيسية</button>
+  </div>
 
-function startGame() {
-  document.getElementById('intro').style.display = 'none';
-  document.getElementById('gameContainer').classList.remove('hidden');
-  loadLevel(currentLevelIndex);
-  updateStatus();
-}
+  <script>
+    const letters = [
+      { letter: "أ", image: "alif.png" },
+      { letter: "ب", image: "ba.png" },
+      { letter: "ت", image: "ta.png" },
+      { letter: "ث", image: "tha.png" },
+      { letter: "ج", image: "jeem.png" }
+      // أضف المزيد حسب حاجتك
+    ];
 
-function loadLevel(levelIndex) {
-  const level = levels[levelIndex];
-  if (!level) return;
+    function startGame() {
+      document.getElementById("intro-screen").style.display = "none";
+      document.getElementById("game-screen").style.display = "flex";
+      setupGame();
+    }
 
-  document.getElementById('levelTitle').textContent = level.name;
-  document.getElementById('progressDisplay').textContent = `التقدم: 0 من ${level.letters.length}`;
-  score = 0;
-  lives = 3;
-  updateStatus();
+    function setupGame() {
+      const dropzones = document.getElementById("dropzones");
+      const draggables = document.getElementById("draggables");
+      dropzones.innerHTML = "";
+      draggables.innerHTML = "";
 
-  const dropzonesContainer = document.getElementById('dropzonesContainer');
-  const draggablesContainer = document.getElementById('draggablesContainer');
-  dropzonesContainer.innerHTML = '';
-  draggablesContainer.innerHTML = '';
+      // ترتيب الحروف من اليمين
+      letters.forEach((item, i) => {
+        const zone = document.createElement("div");
+        zone.className = "dropzone";
+        zone.dataset.letter = item.letter;
+        zone.ondragover = (e) => e.preventDefault();
+        zone.ondrop = (e) => onDrop(e, zone);
+        zone.innerText = item.letter;
+        dropzones.prepend(zone); // للترتيب من اليمين
+      });
 
-  level.letters.forEach((letter) => {
-    const dropZone = document.createElement('div');
-    dropZone.className = 'drop-zone rounded-xl p-4 mb-3 text-center text-3xl font-bold font-arabic';
-    dropZone.dataset.letter = letter.char;
-    dropZone.textContent = letter.char;
-    dropZone.addEventListener('dragover', dragOverHandler);
-    dropZone.addEventListener('drop', dropHandler);
-    dropzonesContainer.prepend(dropZone); // لإظهار الحروف من اليمين لليسار
-  });
+      // عشوائية السحب
+      const shuffled = [...letters].sort(() => 0.5 - Math.random());
+      shuffled.forEach((item) => {
+        const drag = document.createElement("div");
+        drag.className = "draggable";
+        drag.draggable = true;
+        drag.dataset.letter = item.letter;
+        drag.ondragstart = (e) => {
+          e.dataTransfer.setData("text/plain", item.letter);
+        };
+        drag.innerText = item.letter;
+        draggables.appendChild(drag);
+      });
+    }
 
-  const shuffledLetters = [...level.letters].sort(() => Math.random() - 0.5);
+    function onDrop(e, zone) {
+      const dropped = e.dataTransfer.getData("text/plain");
+      if (dropped === zone.dataset.letter) {
+        zone.style.backgroundColor = "#c8e6c9";
+        zone.innerText = "✔";
+        checkWin();
+      } else {
+        zone.style.backgroundColor = "#ffcdd2";
+      }
+    }
 
-  shuffledLetters.forEach((letter) => {
-    const draggable = document.createElement('div');
-    draggable.className = 'letter-card p-4 cursor-move select-none text-center text-3xl font-bold font-arabic';
-    draggable.textContent = letter.char;
-    draggable.draggable = true;
-    draggable.id = `draggable-${letter.char}`;
-    draggable.dataset.letter = letter.char;
-    draggable.addEventListener('dragstart', dragStartHandler);
-    draggable.addEventListener('dragend', dragEndHandler);
-    draggablesContainer.appendChild(draggable);
-  });
-}
+    function checkWin() {
+      const zones = document.querySelectorAll(".dropzone");
+      const allCorrect = Array.from(zones).every(z => z.innerText === "✔");
+      if (allCorrect) showVideo();
+    }
 
-function updateStatus() {
-  document.getElementById('scoreDisplay').textContent = score;
-  document.getElementById('livesDisplay').textContent = '❤️'.repeat(lives);
-  const level = levels[currentLevelIndex];
-  const placedCount = document.querySelectorAll('.drop-zone.correct').length;
-  document.getElementById('progressDisplay').textContent = `التقدم: ${placedCount} من ${level.letters.length}`;
-}
+    let player;
+    function showVideo() {
+      document.getElementById("game-screen").style.display = "none";
+      document.getElementById("video-screen").style.display = "block";
 
-let draggedLetter = null;
+      // إعداد iframe مع YouTube API
+      document.getElementById("video-container").innerHTML = `
+        <div id="ytplayer"></div>
+      `;
 
-function dragStartHandler(event) {
-  draggedLetter = event.target;
-  event.dataTransfer.setData('text/plain', event.target.dataset.letter);
-  setTimeout(() => event.target.classList.add('dragging'), 0);
-}
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
 
-function dragOverHandler(event) {
-  event.preventDefault();
-  event.currentTarget.classList.add('drag-over');
-}
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytplayer', {
+        height: '390',
+        width: '640',
+        videoId: 'MBsYXRytFo8',
+        playerVars: { 'autoplay': 1, 'rel': 0 },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
 
-function dropHandler(event) {
-  event.preventDefault();
-  event.currentTarget.classList.remove('drag-over');
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        document.getElementById("btn-close").classList.remove("hidden");
+        document.getElementById("btn-restart").classList.remove("hidden");
+        document.getElementById("btn-home").classList.remove("hidden");
+      }
+    }
 
-  const dropZoneLetter = event.currentTarget.dataset.letter;
-  const draggedLetterChar = event.dataTransfer.getData('text/plain');
-
-  if (dropZoneLetter === draggedLetterChar) {
-    event.currentTarget.classList.add('correct');
-    draggedLetter.classList.add('hidden');
-    score += 10;
-    animateCorrectAnswer(event.currentTarget);
-  } else {
-    lives--;
-    alert('خطأ! حاول مرة أخرى.');
-  }
-
-  updateStatus();
-  checkLevelCompletion();
-}
-
-function dragEndHandler(event) {
-  event.target.classList.remove('dragging');
-}
-
-function checkLevelCompletion() {
-  const level = levels[currentLevelIndex];
-  const placedCount = document.querySelectorAll('.drop-zone.correct').length;
-  if (placedCount === level.letters.length) {
-    showCelebration();
-  } else if (lives <= 0) {
-    alert('انتهت الأرواح! حاول مرة أخرى.');
-    restartGame();
-  }
-}
-
-function animateCorrectAnswer(element) {
-  element.style.backgroundColor = '#d1e7dd';
-  element.style.transition = 'background-color 0.5s';
-}
-
-function showCelebration() {
-  document.getElementById('celebrationModal').classList.remove('hidden');
-  document.getElementById('finalScore').textContent = score;
-
-  const starsDisplay = document.getElementById('starsDisplay');
-  starsDisplay.innerHTML = '';
-  let starsCount = 1;
-  if (score >= levels[currentLevelIndex].letters.length * 10 * 0.8) starsCount = 3;
-  else if (score >= levels[currentLevelIndex].letters.length * 10 * 0.5) starsCount = 2;
-
-  for (let i = 0; i < starsCount; i++) {
-    const star = document.createElement('span');
-    star.textContent = '⭐';
-    star.style.fontSize = '2rem';
-    starsDisplay.appendChild(star);
-  }
-}
-
-function nextLevel() {
-  document.getElementById('celebrationModal').classList.add('hidden');
-  currentLevelIndex++;
-  if (currentLevelIndex >= levels.length) {
-    showSuccessModal();
-  } else {
-    loadLevel(currentLevelIndex);
-  }
-}
-
-function showSuccessModal() {
-  document.getElementById('successModal').classList.remove('hidden');
-  const rewardVideo = document.getElementById('rewardVideo');
-  rewardVideo.src = 'https://www.youtube.com/embed/MBsYXRytFo8?rel=0&modestbranding=1&autoplay=1';
-}
-
-function closeModal() {
-  document.getElementById('celebrationModal').classList.add('hidden');
-}
-
-function closeColoringModal() {
-  document.getElementById('coloringModal').classList.add('hidden');
-}
-
-function restartGame() {
-  lives = 3;
-  score = 0;
-  currentLevelIndex = 0;
-  document.getElementById('celebrationModal').classList.add('hidden');
-  document.getElementById('successModal').classList.add('hidden');
-  loadLevel(currentLevelIndex);
-  updateStatus();
-}
-
-function goToMainMenu() {
-  document.getElementById('gameContainer').classList.add('hidden');
-  document.getElementById('intro').style.display = 'flex';
-  restartGame();
-}
-
-function goToLevel(index) {
-  if (index < 0 || index >= levels.length) return;
-  currentLevelIndex = index;
-  restartGame();
-}
-
-function shareGame() {
-  if (navigator.share) {
-    navigator.share({
-      title: 'كوكو وأصدقاء الحروف',
-      text: 'تعلم الحروف العربية بطريقة ممتعة مع لعبة كوكو!',
-      url: window.location.href,
-    }).catch((error) => console.error('خطأ في المشاركة:', error));
-  } else {
-    alert('ميزة المشاركة غير مدعومة في متصفحك.');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {});
+    function closeVideo() {
+      document.getElementById("video-screen").style.display = "none";
+    }
+    function restartGame() {
+      closeVideo();
+      startGame();
+    }
+    function goToIntro() {
+      closeVideo();
+      document.getElementById("intro-screen").style.display = "block";
+    }
+  </script>
+</body>
+</html>
