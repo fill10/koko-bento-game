@@ -41,6 +41,18 @@
       </div>
     </div>
   </div>
+document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.getElementById("start-btn");
+  const introScreen = document.getElementById("intro-screen");
+  const gameScreen = document.getElementById("game-screen");
+
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      introScreen.classList.remove("active");
+      gameScreen.classList.add("active");
+    });
+  }
+});
 
   <script src="script.js"></script>
 </body>
