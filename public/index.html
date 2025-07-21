@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="لعبة كوكو وأصدقاء الحروف - لعبة تعليمية ممتعة للأطفال لتعلم الحروف العربية بطريقة تفاعلية">
+  <meta name="keywords" content="تعليم الحروف العربية, ألعاب تعليمية للأطفال, كوكو, حروف عربية, تعلم اللغة العربية">
+  <meta name="author" content="فريق كوكو التعليمي">
+  
+  <!-- Open Graph Meta Tags للمشاركة -->
+  <meta property="og:title" content="كوكو وأصدقاء الحروف - لعبة تعليمية للأطفال">
+  <meta property="og:description" content="لعبة ممتعة وتفاعلية لتعليم الأطفال الحروف العربية مع كوكو الكوالا الودود">
+  <meta property="og:image" content="https://images.pexels.com/photos/1148998/pexels-photo-1148998.jpeg">
+  <meta property="og:url" content="https://koko-letters.netlify.app">
+  <meta property="og:type" content="website">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="كوكو وأصدقاء الحروف">
+  <meta name="twitter:description" content="لعبة تعليمية ممتعة للأطفال لتعلم الحروف العربية">
+  <meta name="twitter:image" content="https://images.pexels.com/photos/1148998/pexels-photo-1148998.jpeg">
+  
+  <title>كوكو وأصدقاء الحروف | لعبة تعليمية للأطفال</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐨</text></svg>">
+  
+  <!-- Google Fonts للخطوط العربية -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <style>
+    .font-arabic { font-family: 'Cairo', sans-serif; }
+    .font-arabic-classic { font-family: 'Amiri', serif; }
+    .arabic-text { font-family: 'Amiri', serif; font-weight: 700; }
+    
+    .letter-card {
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+      border: 3px solid;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .letter-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .letter-card.dragging {
+      transform: rotate(5deg) scale(1.05);
+      opacity: 0.8;
+    }
+    
+    .drop-zone {
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 3px dashed #dee2e6;
+      min-height: 100px;
+    }
+    
+    .drop-zone.drag-over {
+      border-color: #28a745;
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      transform: scale(1.02);
+    }
+    
+    .drop-zone.correct {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-color: #28a745;
+      border-style: solid;
+    }
+    
+    .celebration-effect {
+      animation: celebration 0.6s ease-in-out;
+    }
+    
+    @keyframes celebration {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .game-background {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .intro-background {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .modal-backdrop {
+      backdrop-filter: blur(5px);
+    }
+    
+    .bounce-in {
+      animation: bounceIn 0.6s ease-out;
+    }
+    
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="game-background">
+
+  <!-- واجهة البداية -->
+  <div id="intro" class="fixed inset-0 intro-background flex flex-col items-center justify-center z-50">
+    <div class="text-center p-8 bg-white bg-opacity-90 rounded-3xl shadow-2xl max-w-md mx-4">
+      <!-- شعار كوكو -->
+      <div class="mb-4">
+        <img src="./assets/coloring/koko.png" alt="كوكو" class="w-32 h-32 mx-auto rounded-full shadow-lg">
+      </div>
+      <h1 class="text-4xl font-bold text-gray-800 mb-2 font-arabic">كوكو وأصدقاء الحروف</h1>
+      <p class="text-lg text-gray-600 mb-6 font-arabic">تعلم الحروف العربية بطريقة ممتعة!</p>
+      
+      <button onclick="startGame()" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-all duration-300 font-arabic">
+        🎮 ابدأ اللعب
+      </button>
+      
+      <div class="mt-6 flex justify-center space-x-4">
+        <button onclick="shareGame()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-arabic">
+          📤 شارك اللعبة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- الحاوية الرئيسية للعبة -->
+  <div id="gameContainer" class="hidden min-h-screen p-4">
+    
+    <!-- شريط المعلومات العلوي -->
+    <div class="bg-white bg-opacity-90 rounded-2xl p-4 mb-6 shadow-lg">
+      <div class="flex justify-between items-center flex-wrap gap-4">
+        <div class="flex items-center space-x-4">
+          <div>
+            <img src="./assets/coloring/koko.png" alt="كوكو" class="w-12 h-12 rounded-full">
+          </div>
+          <div>
+            <h2 id="levelTitle" class="text-xl font-bold text-gray-800 font-arabic">المستوى الأول</h2>
+            <p id="progressDisplay" class="text-sm text-gray-600 font-arabic">التقدم: 0 من 8</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+          <div class="text-center">
+            <div class="text-sm text-gray-600 font-arabic">النقاط</div>
+            <div id="scoreDisplay" class="text-2xl font-bold text-blue-600">0</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm text-gray-600 font-arabic">الأرواح</div>
+            <div id="livesDisplay" class="text-xl">❤️❤️❤️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="mb-6">
+      <div class="bg-white bg-opacity-90 rounded-2xl p-4 shadow-lg">
+        <div class="flex justify-center items-center flex-wrap gap-4">
+          <button onclick="goToMainMenu()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-arabic flex items-center gap-2">
+            🏠 الشاشة الرئيسية
+          </button>
+          
+          <div class="flex gap-2">
+            <button onclick="goToLevel(0)" class="level-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-arabic">
+              المستوى 1
+            </button>
+            <button onclick="goToLevel(1)" class="level-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-arabic">
+              المستوى 2
+            </button>
+            <button onclick="goToLevel(2)" class="level-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-arabic">
+              المستوى 3
+            </button>
+          </div>
+          
+          <button onclick="restartGame()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-arabic flex items-center gap-2">
+            🔄 إعادة تشغيل
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- مناطق الإسقاط -->
+    <div class="mb-8 max-w-7xl mx-auto">
+      <h3 class="text-2xl font-bold text-white text-center mb-6 font-arabic">🎯 اسحب الحروف إلى أماكنها الصحيحة</h3>
+      
+      <!-- التخطيط الجديد: الحروف يميناً ومناطق الإسقاط يساراً -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- مناطق الإسقاط - الجانب الأيسر -->
+        <div class="order-2 lg:order-1">
+          <h4 class="text-xl font-bold text-white text-center mb-4 font-arabic">📍 أماكن الحروف</h4>
+          <div id="dropzonesContainer" class="space-y-3">
+            <!-- سيتم إنشاء مناطق الإسقاط هنا عمودياً -->
+          </div>
+        </div>
+        
+        <!-- الحروف القابلة للسحب - الجانب الأيمن -->
+        <div class="order-1 lg:order-2">
+          <h4 class="text-xl font-bold text-white text-center mb-4 font-arabic">📝 الحروف</h4>
+          <div id="draggablesContainer" class="space-y-3">
+            <!-- سيتم إنشاء الحروف القابلة للسحب هنا عمودياً -->
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- أزرار التحكم -->
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-4 z-40">
+      <button onclick="shareGame()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full shadow-lg font-arabic">
+        📤 مشاركة
+      </button>
+    </div>
+  </div>
+
+  <!-- نافذة الاحتفال -->
+  <div id="celebrationModal" class="fixed inset-0 bg-black bg-opacity-70 modal-backdrop flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md mx-4 text-center bounce-in">
+      <div class="mb-4">
+        <img src="./assets/coloring/koko.png" alt="كوكو" class="w-20 h-20 mx-auto rounded-full">
+      </div>
+      <h2 id="celebrationTitle" class="text-3xl font-bold text-gray-800 mb-4 font-arabic">أحسنت!</h2>
+      <p id="celebrationMessage" class="text-lg text-gray-600 mb-6 font-arabic">لقد أكملت هذا المستوى بنجاح!</p>
+      
+      <div class="mb-6">
+        <div class="text-sm text-gray-600 font-arabic mb-2">نقاطك النهائية</div>
+        <div id="finalScore" class="text-4xl font-bold text-blue-600">0</div>
+      </div>
+      
+      <div id="starsDisplay" class="mb-6 flex justify-center space-x-1">
+        <!-- النجوم ستظهر هنا -->
+      </div>
+      
+      <div class="flex flex-col space-y-3">
+        <button id="nextLevelBtn" onclick="nextLevel()" class="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          🚀 المستوى التالي
+        </button>
+        <button onclick="goToMainMenu()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          🏠 الشاشة الرئيسية
+        </button>
+        <button onclick="restartGame()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          🔄 إعادة تشغيل
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة فيديو المكافأة -->
+  <div id="successModal" class="fixed inset-0 bg-black bg-opacity-80 modal-backdrop flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-2xl mx-4 bounce-in">
+      <div class="text-center mb-4">
+        <div class="mb-2">
+          <img src="./assets/coloring/koko.png" alt="كوكو" class="w-20 h-20 mx-auto rounded-full">
+        </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2 font-arabic">مبروك! أكملت اللعبة!</h2>
+        <p class="text-lg text-gray-600 font-arabic">لقد تعلمت جميع الحروف! شاهد المفاجأة 👇</p>
+      </div>
+      
+      <div class="w-full aspect-video mb-6 rounded-2xl overflow-hidden">
+        <iframe 
+          id="rewardVideo"
+          class="w-full h-full" 
+          src="" 
+          title="فيديو المكافأة" 
+          frameborder="0" 
+          allow="autoplay; encrypted-media" 
+          allowfullscreen>
+        </iframe>
+      </div>
+      
+      <div class="flex justify-center space-x-4">
+        <button onclick="closeModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          ✨ إغلاق
+        </button>
+        <button onclick="goToMainMenu()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          🏠 الشاشة الرئيسية
+        </button>
+        <button onclick="restartGame()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          🔄 العب مرة أخرى
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة التلوين -->
+  <div id="coloringModal" class="fixed inset-0 bg-black bg-opacity-80 modal-backdrop flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-4xl mx-4 bounce-in">
+      <div class="text-center mb-4">
+        <div class="mb-2">
+          <img src="./assets/coloring/koko.png" alt="كوكو" class="w-16 h-16 mx-auto rounded-full">
+        </div>
+        <h2 id="coloringTitle" class="text-3xl font-bold text-gray-800 mb-2 font-arabic">يلا نلون!</h2>
+        <p class="text-lg text-gray-600 font-arabic">استخدم الألوان لتلوين الصورة الجميلة!</p>
+      </div>
+      
+      <!-- منطقة التلوين -->
+      <div class="bg-gray-100 rounded-2xl p-4 mb-6">
+        <div class="relative w-full max-w-2xl mx-auto">
+          <img id="coloringImage" src="" alt="صورة التلوين" class="w-full h-auto rounded-lg shadow-lg">
+          
+          <!-- أدوات التلوين -->
+          <div class="absolute top-4 right-4 bg-white rounded-lg p-2 shadow-lg">
+            <div class="text-sm font-arabic mb-2">اختر اللون:</div>
+            <div class="grid grid-cols-4 gap-2">
+              <div class="w-8 h-8 bg-red-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#ef4444')"></div>
+              <div class="w-8 h-8 bg-blue-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#3b82f6')"></div>
+              <div class="w-8 h-8 bg-green-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#22c55e')"></div>
+              <div class="w-8 h-8 bg-yellow-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#eab308')"></div>
+              <div class="w-8 h-8 bg-purple-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#a855f7')"></div>
+              <div class="w-8 h-8 bg-pink-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#ec4899')"></div>
+              <div class="w-8 h-8 bg-orange-500 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#f97316')"></div>
+              <div class="w-8 h-8 bg-gray-800 rounded-full cursor-pointer hover:scale-110 transition-transform" onclick="selectColor('#1f2937')"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- رسالة تشجيعية -->
+        <div class="text-center mt-4">
+          <p class="text-lg text-gray-600 font-arabic">🌟 أبدع بألوانك الجميلة! 🌟</p>
+        </div>
+      </div>
+      
+      <div class="flex justify-center space-x-4">
+        <button onclick="finishColoring()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full font-arabic">
+          ✨ انتهيت من التلوين
+        </button>
+        <button onclick="closeColoringModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full font-arabic">
+          ❌ إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- تحميل ملف JavaScript -->
+  <script src="main.js"></script>
+</body>
+</html>

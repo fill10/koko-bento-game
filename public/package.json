@@ -1,0 +1,38 @@
+{
+  "name": "koko-arabic-letters-game",
+  "version": "1.0.0",
+  "description": "🐨 لعبة كوكو وأصدقاء الحروف - لعبة تعليمية تفاعلية للأطفال لتعلم الحروف العربية بطريقة ممتعة",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server . -p 8080 -o",
+    "start": "http-server . -p 8080",
+    "build": "echo 'Static files ready for deployment'",
+    "preview": "http-server . -p 3000"
+  },
+  "keywords": [
+    "arabic",
+    "حروف عربية",
+    "letters",
+    "kids",
+    "أطفال",
+    "education",
+    "تعليم",
+    "game",
+    "لعبة",
+    "drag-drop",
+    "koko",
+    "كوكو",
+    "interactive",
+    "تفاعلي"
+  ],
+  "author": "فريق كوكو التعليمي",
+  "license": "MIT",
+  "homepage": "https://koko-letters.netlify.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koko-team/arabic-letters-game"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
