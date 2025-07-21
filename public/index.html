@@ -1,27 +1,64 @@
-
 <!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>html {
-height: 100%;
-}
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لعبة كوكو وأصدقاء الحروف</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="intro-screen">
+      <img src="assets/koko.png" alt="شخصية كوكو" class="koko-character" />
+      <h1>مرحبًا بك في لعبة كوكو وأصدقاء الحروف!</h1>
+      <button id="start-button">ابدأ اللعبة</button>
+    </div>
 
-body {
-margin: 0;
-padding: 0;
-height: 100%;
-}
+    <div id="game-container" class="hidden">
+      <div id="drop-zones">
+        <!-- ترتيب أبجدي للحروف -->
+        <div class="drop-zone" data-letter="أ"></div>
+        <div class="drop-zone" data-letter="ب"></div>
+        <div class="drop-zone" data-letter="ت"></div>
+        <div class="drop-zone" data-letter="ث"></div>
+        <div class="drop-zone" data-letter="ج"></div>
+        <div class="drop-zone" data-letter="ح"></div>
+        <div class="drop-zone" data-letter="خ"></div>
+        <div class="drop-zone" data-letter="د"></div>
+        <div class="drop-zone" data-letter="ذ"></div>
+      </div>
 
-iframe {
-display: block;
-width: 100%;
-height: 100%;
-border: 0;
-}
-</style>
-</head>
-<body>
-<iframe src="/.localservice@no-server.96435430.html"></iframe>
-</body>
-</htm
+      <div id="draggables">
+        <!-- عناصر السحب بجوار مناطقها -->
+        <img src="assets/أسد.png" data-letter="أ" class="draggable" />
+        <img src="assets/بطة.png" data-letter="ب" class="draggable" />
+        <img src="assets/تفاحة.png" data-letter="ت" class="draggable" />
+        <img src="assets/ثعلب.png" data-letter="ث" class="draggable" />
+        <img src="assets/جمل.png" data-letter="ج" class="draggable" />
+        <img src="assets/حصان.png" data-letter="ح" class="draggable" />
+        <img src="assets/خروف.png" data-letter="خ" class="draggable" />
+        <img src="assets/دجاجة.png" data-letter="د" class="draggable" />
+        <img src="assets/ذرة.png" data-letter="ذ" class="draggable" />
+      </div>
+    </div>
+
+    <div id="video-screen" class="hidden">
+      <iframe
+        id="reward-video"
+        width="100%"
+        height="315"
+        src="https://www.youtube.com/embed/MBsYXRytFo8?enablejsapi=1&rel=0&modestbranding=1"
+        title="فيديو نهاية المستوى"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+      ></iframe>
+      <div class="video-controls">
+        <button id="close-video">إغلاق</button>
+        <button id="replay-button">إعادة اللعب</button>
+        <button id="home-button">العودة للرئيسية</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
